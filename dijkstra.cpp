@@ -53,3 +53,61 @@ class Read_Graph{
         }
     }
 };
+
+/*
+        Um dijkstra seco não é capaz de resolver então eu fui atras de uma solução que mais palpavel que ainda tivesse 
+    a ver com o algoritmo porque era minha principal referencia de resolução de caminho minimo
+    O problema do dijkstra nesse cenáario é ficar preso ao valor minimo de um vertice,o que não importa se no caminho final
+    eu chego até esse esse vertice com um caminho mai pesado mas com mais interruptores ativado.
+
+        Então o objetivo aqui é chegar em cada vértice com o maior número de interruptores ativados.Para isso,minha intenção é usar o dijkstra
+    com uma modificação na fila de prioridade e na leitura de cada vertice:cada vertice ter armazenado além de seu peso quantos interruptores
+    eu  tinha ativado quando eu cheguei nela e isso por meio de um estado ne,ou seja,cada vertice pode ter no maximo 14 eestados contando com o
+    com todos ou nenhum interruptor ativado.Para mim faz sentido com o minimo de alteração possível em um conceito que eu já conheço
+
+        Antes de tentar implementar eu imagino que seja apenas uma alteração na fila de prioridade no dijkstra mas eu ainda não sei como 7
+    manipular a informação de onde estão os interruptores nesse cenário
+
+*/
+
+std::vector<int> Dijkstra(std::vector<std::vector<std::pair<int,int>>>& graph,int src ){
+    int V = graph.size();
+
+    //min heap
+    std::priority_queue<
+        std::pair<int,int>,
+        std::vector<std::pair<int,int>>,
+        std::greater<std::pair<int,int>>
+    > pq;
+
+    //inicilaizando 0 no vetor inicial
+    std::vector<int> dist(V,INT_MAX);
+    dist[src] = 0;
+    pq.emplace(0,src);
+
+    //processando a fila
+    while(!pq.empty()){
+        auto top = pq.top();
+        pq.pop();
+
+        int d = top.first;
+        int u = top.second;
+
+        //se nao for menor que o já achado manda matar
+        if(d > dist[u] )
+            continue;
+
+        for(auto &p : graph[u]){
+            int v = p.first;
+            int w = p.second;
+
+            //se o resultado for menor,atualiza
+            if(dist[u] + w < dist[v]){
+                dist[v] = dist[u] + w;
+                pq.emplace(v,dist[v]);
+            }
+        }
+    }
+    
+    return dist;
+};
